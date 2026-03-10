@@ -55,4 +55,4 @@ dawaikart247.com/
 
 ## 📬 Contact
 
-**founder@dawaikart247.com** · Hyderabad, India
+**dawaikart247@gmail.com** · Hyderabad, India
