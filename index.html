@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DawaiKart247 — Smarter Medicine. Zero Waste.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;600;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#04060d;
+  --cyan:#00d4ff;
+  --cyan2:#00a8cc;
+  --green:#00ff88;
+  --red:#ff3b5c;
+  --amber:#ffaa00;
+  --purple:#9b59ff;
+  --white:#f0f4ff;
+  --muted:#5a6a8a;
+  --card:rgba(255,255,255,0.04);
+  --border:rgba(255,255,255,0.08);
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-serif;overflow-x:hidden}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:999px}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2.5rem;height:58px;
+  background:rgba(4,6,13,0.85);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  transition:all 0.3s;
+}
+.nav-logo{
+  font-family:'Fraunces',serif;font-size:1.25rem;font-weight:900;
+  letter-spacing:-1px;color:var(--white);
+}
+.nav-logo span{color:var(--cyan)}
+.nav-links{display:flex;gap:1.75rem}
+.nav-links a{
+  font-size:0.8rem;font-weight:500;color:var(--muted);
+  text-decoration:none;transition:color 0.2s;letter-spacing:0.3px;
+}
+.nav-links a:hover{color:var(--white)}
+.nav-cta{
+  background:var(--cyan);color:#000;padding:8px 20px;border-radius:999px;
+  font-size:0.8rem;font-weight:700;text-decoration:none;
+  transition:all 0.2s;letter-spacing:0.3px;
+}
+.nav-cta:hover{background:var(--cyan2);transform:translateY(-1px)}
+
+/* ── SCROLL CANVAS SECTION ── */
+#canvas-section{
+  position:relative;
+  height:400vh;
+}
+#canvas-sticky{
+  position:sticky;top:0;width:100%;height:100vh;overflow:hidden;
+}
+#pill-canvas{
+  width:100%;height:100%;object-fit:cover;display:block;
+}
+.canvas-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to bottom, rgba(4,6,13,0.3) 0%, transparent 30%, transparent 70%, rgba(4,6,13,1) 100%);
+  pointer-events:none;
+}
+.canvas-text{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+  pointer-events:none;
+}
+.canvas-eyebrow{
+  font-size:0.72rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+  color:var(--cyan);margin-bottom:1rem;opacity:0;transform:translateY(20px);
+  transition:all 0.6s;
+}
+.canvas-title{
+  font-family:'Fraunces',serif;font-size:clamp(3rem,8vw,7rem);font-weight:900;
+  line-height:0.95;letter-spacing:-3px;
+  opacity:0;transform:translateY(30px);transition:all 0.6s 0.1s;
+}
+.canvas-title em{font-style:italic;color:var(--cyan)}
+.canvas-sub{
+  font-size:1.1rem;color:rgba(240,244,255,0.7);max-width:500px;
+  margin-top:1.25rem;line-height:1.65;font-weight:300;
+  opacity:0;transform:translateY(20px);transition:all 0.6s 0.2s;
+}
+.canvas-actions{
+  display:flex;gap:1rem;margin-top:2rem;
+  opacity:0;transform:translateY(20px);transition:all 0.6s 0.3s;
+}
+.canvas-text.visible .canvas-eyebrow,
+.canvas-text.visible .canvas-title,
+.canvas-text.visible .canvas-sub,
+.canvas-text.visible .canvas-actions{opacity:1;transform:translateY(0)}
+
+/* scroll hint */
+.scroll-hint{
+  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  opacity:0.5;font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;
+  animation:bounce 2s infinite;
+}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(6px)}}
+.scroll-arrow{font-size:1rem}
+
+/* Frame counter */
+.frame-indicator{
+  position:absolute;bottom:2rem;right:2rem;
+  font-family:monospace;font-size:0.7rem;color:rgba(0,212,255,0.4);
+  letter-spacing:1px;
+}
+
+/* ── MARQUEE ── */
+.marquee-wrap{
+  background:linear-gradient(90deg,var(--cyan),var(--purple),var(--cyan));
+  background-size:200% 100%;animation:gradShift 4s linear infinite;
+  padding:11px 0;overflow:hidden;
+}
+@keyframes gradShift{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+.marquee-inner{display:flex;animation:marquee 20s linear infinite;white-space:nowrap}
+.marquee-item{
+  padding:0 2rem;font-size:0.78rem;font-weight:700;color:#000;
+  display:flex;align-items:center;gap:8px;letter-spacing:0.3px;
+}
+.m-sep{opacity:0.3;margin:0 0.5rem}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ── SECTIONS ── */
+section{padding:6rem 2rem}
+.container{max-width:1100px;margin:0 auto}
+.s-eye{font-size:0.68rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--cyan);margin-bottom:0.75rem}
+.s-title{font-family:'Fraunces',serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:900;line-height:1.05;letter-spacing:-2px;margin-bottom:0.75rem}
+.s-sub{font-size:0.95rem;color:var(--muted);max-width:520px;line-height:1.75;font-weight:300}
+
+/* ── STATS ROW ── */
+.stats-row{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  border:1px solid var(--border);border-radius:20px;overflow:hidden;
+  margin:4rem 0;
+}
+.stat-item{
+  padding:2.5rem 2rem;border-right:1px solid var(--border);
+  text-align:center;transition:background 0.2s;
+}
+.stat-item:last-child{border-right:none}
+.stat-item:hover{background:rgba(0,212,255,0.04)}
+.stat-val{font-family:'Fraunces',serif;font-size:2.8rem;font-weight:900;letter-spacing:-2px;line-height:1}
+.stat-val span{color:var(--cyan)}
+.stat-label{font-size:0.75rem;color:var(--muted);margin-top:6px;letter-spacing:0.3px}
+
+/* ── PROBLEM ── */
+.prob-section{background:linear-gradient(180deg,var(--bg) 0%,#0a0014 100%)}
+.prob-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:3rem}
+.prob-card{
+  background:var(--card);border:1px solid var(--border);border-radius:18px;
+  padding:2rem;transition:all 0.25s;position:relative;overflow:hidden;
+}
+.prob-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--red),transparent);
+  opacity:0;transition:opacity 0.3s;
+}
+.prob-card:hover{transform:translateY(-4px);border-color:rgba(255,59,92,0.3)}
+.prob-card:hover::before{opacity:1}
+.prob-num{font-family:'Fraunces',serif;font-size:3rem;font-weight:900;letter-spacing:-2px;color:var(--red);line-height:1}
+.prob-title{font-size:1rem;font-weight:700;margin:8px 0 6px}
+.prob-desc{font-size:0.78rem;color:var(--muted);line-height:1.65}
+
+/* ── APP SHOWCASES ── */
+.apps-section{background:var(--bg)}
+
+/* APP CARD */
+.app-showcase{
+  display:grid;grid-template-columns:1fr 1fr;gap:4rem;
+  align-items:center;margin-bottom:6rem;padding-bottom:6rem;
+  border-bottom:1px solid var(--border);
+}
+.app-showcase:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.app-showcase.reverse{direction:rtl}
+.app-showcase.reverse > *{direction:ltr}
+
+.app-info .app-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 14px;border-radius:999px;font-size:0.72rem;font-weight:700;
+  letter-spacing:0.5px;margin-bottom:1rem;
+}
+.app-info .app-num{
+  font-family:'Fraunces',serif;font-size:4rem;font-weight:900;
+  letter-spacing:-3px;line-height:1;opacity:0.1;margin-bottom:-0.5rem;
+}
+.app-info h3{
+  font-family:'Fraunces',serif;font-size:2.2rem;font-weight:900;
+  letter-spacing:-1.5px;line-height:1.1;margin-bottom:0.75rem;
+}
+.app-info p{font-size:0.88rem;color:var(--muted);line-height:1.75;margin-bottom:1.5rem}
+.feature-list{display:flex;flex-direction:column;gap:8px;margin-bottom:1.75rem}
+.feat-item{
+  display:flex;align-items:flex-start;gap:10px;
+  font-size:0.8rem;color:rgba(240,244,255,0.8);line-height:1.5;
+}
+.feat-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
+
+/* FUTURISTIC BADGE */
+.future-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(155,89,255,0.1);border:1px solid rgba(155,89,255,0.25);
+  border-radius:6px;padding:4px 10px;font-size:0.68rem;font-weight:700;
+  color:var(--purple);letter-spacing:0.5px;margin-left:6px;
+}
+
+/* MOCK SCREEN */
+.mock-screen{
+  background:#0b1120;border:1px solid rgba(0,212,255,0.15);border-radius:16px;
+  overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,0.6), 0 0 60px rgba(0,212,255,0.05);
+  transition:transform 0.3s;
+}
+.mock-screen:hover{transform:scale(1.02) rotateY(-2deg)}
+.mock-bar{
+  background:#0d1525;padding:10px 16px;display:flex;align-items:center;gap:8px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.mock-dot{width:8px;height:8px;border-radius:50%}
+.mock-url{
+  flex:1;background:rgba(255,255,255,0.05);border-radius:5px;
+  padding:4px 10px;font-size:0.65rem;color:var(--muted);font-family:monospace;
+}
+.mock-body{padding:1.25rem}
+
+/* MINI UI ELEMENTS */
+.mini-stat-row{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+.mini-stat{
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  border-radius:10px;padding:10px;
+}
+.mini-stat-val{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:900;line-height:1}
+.mini-stat-lbl{font-size:0.6rem;color:var(--muted);margin-top:2px}
+.mini-table{width:100%;border-collapse:collapse;font-size:0.68rem}
+.mini-table th{
+  padding:6px 8px;text-align:left;color:var(--muted);
+  border-bottom:1px solid var(--border);font-size:0.6rem;letter-spacing:0.5px;text-transform:uppercase;
+}
+.mini-table td{padding:7px 8px;border-bottom:1px solid rgba(255,255,255,0.04)}
+.mini-badge{display:inline-block;padding:2px 7px;border-radius:999px;font-size:0.6rem;font-weight:700}
+.mb-red{background:rgba(255,59,92,0.15);color:#ff6b85}
+.mb-amber{background:rgba(255,170,0,0.15);color:#ffcc44}
+.mb-green{background:rgba(0,255,136,0.15);color:#00ff88}
+.mb-cyan{background:rgba(0,212,255,0.15);color:var(--cyan)}
+.mini-progress{height:4px;border-radius:999px;background:rgba(255,255,255,0.08);overflow:hidden;margin-top:3px}
+.mini-fill{height:4px;border-radius:999px}
+.mini-section{font-size:0.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:10px 0 6px}
+.mini-card{
+  background:rgba(255,255,255,0.03);border:1px solid var(--border);
+  border-radius:8px;padding:8px 10px;margin-bottom:6px;
+  display:flex;align-items:center;gap:8px;font-size:0.7rem;
+}
+.mini-icon{font-size:1rem;flex-shrink:0}
+.mini-order-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.68rem}
+.mini-alert{
+  background:rgba(255,170,0,0.08);border:1px solid rgba(255,170,0,0.2);
+  border-radius:7px;padding:7px 10px;font-size:0.68rem;color:#ffcc44;margin-bottom:8px;
+}
+.mini-map{
+  background:#0a1628;border-radius:10px;padding:12px;margin-bottom:8px;
+  position:relative;overflow:hidden;height:100px;
+}
+.map-dot{
+  position:absolute;width:10px;height:10px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+}
+.map-dot::after{
+  content:'';position:absolute;width:20px;height:20px;border-radius:50%;
+  animation:mapPulse 2s infinite;
+}
+@keyframes mapPulse{0%{transform:scale(1);opacity:0.6}100%{transform:scale(2.5);opacity:0}}
+.map-line{position:absolute;height:1px;background:rgba(0,212,255,0.3);transform-origin:left center}
+.mini-match{
+  background:rgba(255,255,255,0.03);border:1px solid var(--border);
+  border-radius:8px;padding:8px 10px;margin-bottom:6px;
+}
+.match-flow-mini{display:flex;align-items:center;gap:4px;font-size:0.65rem;margin-top:4px}
+.city-chip{background:rgba(0,212,255,0.1);border-radius:4px;padding:2px 6px;color:var(--cyan);font-weight:600}
+.surplus-chip{background:rgba(255,170,0,0.1);border-radius:4px;padding:2px 6px;color:var(--amber);font-weight:600}
+
+/* ── VISION FLOW ── */
+.vision-section{
+  background:linear-gradient(180deg,var(--bg) 0%,#030810 50%,var(--bg) 100%);
+  position:relative;overflow:hidden;
+}
+.vision-section::before{
+  content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:800px;height:800px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,212,255,0.04) 0%,transparent 70%);
+  pointer-events:none;
+}
+.vision-flow{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:3.5rem;position:relative}
+.vision-flow::before{
+  content:'';position:absolute;top:40px;left:16%;right:16%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+  opacity:0.3;
+}
+.vf-card{
+  padding:2rem 1.75rem;background:var(--card);
+  border:1px solid var(--border);border-radius:0;transition:all 0.25s;
+  position:relative;
+}
+.vf-card:first-child{border-radius:18px 0 0 18px}
+.vf-card:last-child{border-radius:0 18px 18px 0}
+.vf-card:hover{background:rgba(0,212,255,0.04);z-index:1}
+.vf-num{
+  width:42px;height:42px;border-radius:50%;border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fraunces',serif;font-weight:900;font-size:1rem;
+  margin-bottom:1.25rem;color:var(--cyan);
+}
+.vf-phase{font-size:0.62rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem}
+.vf-title{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:900;margin-bottom:0.5rem;letter-spacing:-0.5px}
+.vf-desc{font-size:0.76rem;color:var(--muted);line-height:1.65;margin-bottom:1rem}
+.vf-tags{display:flex;flex-direction:column;gap:5px}
+.vf-tag{font-size:0.72rem;display:flex;align-items:center;gap:6px;color:rgba(240,244,255,0.7)}
+.vf-tag::before{content:'→';color:var(--cyan);font-weight:700;flex-shrink:0}
+
+/* ── FUTURISTIC FEATURES ── */
+.future-section{background:#030810}
+.future-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:3rem}
+.future-card{
+  background:var(--card);border:1px solid var(--border);border-radius:18px;
+  padding:1.75rem;transition:all 0.25s;position:relative;overflow:hidden;
+}
+.future-card::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:60px;
+  background:linear-gradient(to top,rgba(0,212,255,0.03),transparent);
+  opacity:0;transition:opacity 0.3s;
+}
+.future-card:hover{transform:translateY(-4px);border-color:rgba(0,212,255,0.2)}
+.future-card:hover::after{opacity:1}
+.fc-icon{
+  width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;margin-bottom:1.25rem;
+}
+.fc-title{font-size:0.95rem;font-weight:700;margin-bottom:0.4rem}
+.fc-desc{font-size:0.76rem;color:var(--muted);line-height:1.65}
+.fc-label{
+  display:inline-block;margin-top:0.75rem;
+  font-size:0.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  padding:3px 8px;border-radius:4px;
+}
+
+/* ── IMPACT ── */
+.impact-section{
+  background:linear-gradient(135deg,#000d20 0%,#001a0d 50%,#000d20 100%);
+  text-align:center;position:relative;overflow:hidden;
+}
+.impact-section::before{
+  content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);
+  width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,255,136,0.06) 0%,transparent 70%);
+  pointer-events:none;
+}
+.impact-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:1px;background:var(--border);
+  border:1px solid var(--border);border-radius:20px;overflow:hidden;
+  margin-top:3rem;
+}
+.impact-item{background:var(--bg);padding:2.5rem 1.5rem;text-align:center}
+.impact-val{font-family:'Fraunces',serif;font-size:2.5rem;font-weight:900;letter-spacing:-2px;line-height:1}
+.impact-lbl{font-size:0.72rem;color:var(--muted);margin-top:6px;line-height:1.4}
+
+/* ── SURVEY ── */
+.survey-section{background:var(--bg)}
+.survey-wrap{display:grid;grid-template-columns:1fr 1.2fr;gap:4rem;align-items:start;margin-top:3rem}
+.survey-why{display:flex;flex-direction:column;gap:14px;margin-top:2rem}
+.sw-item{display:flex;gap:12px;font-size:0.82rem;color:var(--muted);line-height:1.6;align-items:flex-start}
+.sw-num{
+  width:26px;height:26px;border-radius:50%;background:rgba(0,212,255,0.1);
+  border:1px solid rgba(0,212,255,0.2);color:var(--cyan);font-size:0.7rem;
+  font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;
+}
+.survey-counter{
+  margin-top:2rem;background:rgba(0,255,136,0.06);border:1px solid rgba(0,255,136,0.15);
+  border-radius:12px;padding:1.1rem 1.4rem;
+}
+.sc-val{font-family:'Fraunces',serif;font-size:2rem;font-weight:900;color:var(--green)}
+.sc-lbl{font-size:0.72rem;color:var(--muted);margin-top:2px}
+
+/* FORM */
+.s-form{
+  background:rgba(255,255,255,0.03);border:1px solid var(--border);
+  border-radius:20px;padding:2rem;
+}
+.form-title{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:900;margin-bottom:0.2rem}
+.form-sub{font-size:0.75rem;color:var(--muted);margin-bottom:1.25rem}
+.form-prog{display:flex;gap:5px;margin-bottom:1.5rem}
+.fp{flex:1;height:3px;border-radius:999px;background:var(--border);transition:background 0.3s}
+.fp.on{background:var(--cyan)}
+.fq{font-size:0.82rem;font-weight:600;margin-bottom:10px;color:var(--white)}
+.fq em{color:var(--muted);font-style:normal;font-weight:400;font-size:0.75rem;margin-left:4px}
+.fopts{display:flex;flex-direction:column;gap:7px;margin-bottom:1.25rem}
+.fopt{
+  display:flex;align-items:center;gap:10px;padding:10px 14px;
+  border:1px solid var(--border);border-radius:10px;cursor:pointer;
+  font-size:0.8rem;color:rgba(240,244,255,0.8);background:rgba(255,255,255,0.02);
+  transition:all 0.15s;
+}
+.fopt:hover,.fopt.sel{border-color:var(--cyan);background:rgba(0,212,255,0.06);color:var(--white)}
+.fopt.sel{font-weight:600;color:var(--cyan)}
+.finput{
+  width:100%;padding:10px 14px;background:rgba(255,255,255,0.04);
+  border:1px solid var(--border);border-radius:10px;
+  color:var(--white);font-size:0.82rem;font-family:'DM Sans',sans-serif;
+  outline:none;margin-bottom:10px;transition:border-color 0.15s;
+}
+.finput:focus{border-color:var(--cyan)}
+.finput::placeholder{color:var(--muted)}
+.fnav{display:flex;gap:8px;margin-top:0.5rem}
+.btn-next{
+  flex:1;background:var(--cyan);color:#000;padding:11px;border-radius:10px;
+  font-size:0.83rem;font-weight:700;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;
+  transition:all 0.15s;
+}
+.btn-next:hover{background:var(--cyan2)}
+.btn-back{
+  background:transparent;color:var(--muted);padding:11px 16px;border-radius:10px;
+  font-size:0.82rem;font-weight:500;border:1px solid var(--border);cursor:pointer;
+  font-family:'DM Sans',sans-serif;transition:all 0.15s;
+}
+.btn-back:hover{border-color:var(--white);color:var(--white)}
+.fstep{display:none}
+.fstep.active{display:block}
+.fsuccess{display:none;text-align:center;padding:2rem 0}
+.fsuccess-icon{font-size:3rem;margin-bottom:1rem}
+.fsuccess-title{font-family:'Fraunces',serif;font-size:1.3rem;font-weight:900;margin-bottom:0.5rem}
+.fsuccess-sub{font-size:0.8rem;color:var(--muted);line-height:1.65}
+.fsuccess-share{
+  margin-top:1.25rem;background:rgba(0,255,136,0.06);border:1px solid rgba(0,255,136,0.15);
+  border-radius:10px;padding:0.85rem;font-size:0.75rem;color:var(--green);
+}
+
+/* ── ROADMAP ── */
+.roadmap-section{background:#030810}
+.rm-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:3rem}
+.rm-track{position:relative}
+.rm-track::before{
+  content:'';position:absolute;left:19px;top:28px;bottom:0;width:1px;
+  background:linear-gradient(to bottom,var(--cyan),transparent);opacity:0.2;
+}
+.rm-item{display:flex;gap:1.25rem;margin-bottom:1.75rem}
+.rm-dot{
+  width:40px;height:40px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:0.8rem;
+  font-weight:700;z-index:1;border:2px solid;transition:all 0.2s;
+}
+.rm-dot.done{background:var(--cyan);color:#000;border-color:var(--cyan);box-shadow:0 0 20px rgba(0,212,255,0.3)}
+.rm-dot.now{background:transparent;color:var(--amber);border-color:var(--amber);box-shadow:0 0 12px rgba(255,170,0,0.3);animation:rmPulse 2s infinite}
+@keyframes rmPulse{0%,100%{box-shadow:0 0 12px rgba(255,170,0,0.3)}50%{box-shadow:0 0 24px rgba(255,170,0,0.6)}}
+.rm-dot.next{background:transparent;color:var(--muted);border-color:var(--border)}
+.rm-phase{font-size:0.62rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:3px;margin-top:8px}
+.rm-title{font-family:'Fraunces',serif;font-size:1rem;font-weight:900;margin-bottom:3px}
+.rm-desc{font-size:0.75rem;color:var(--muted);line-height:1.6}
+.why-now-card{
+  background:var(--card);border:1px solid var(--border);border-radius:18px;padding:2rem;
+}
+.wn-title{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:900;margin-bottom:1.25rem}
+.wn-item{display:flex;gap:10px;font-size:0.8rem;color:var(--muted);line-height:1.55;margin-bottom:12px;align-items:flex-start}
+.wn-emoji{font-size:1.1rem;flex-shrink:0;margin-top:1px}
+
+/* ── INVESTOR ── */
+.investor-section{
+  background:linear-gradient(135deg,#000d20,#0a0014);
+  text-align:center;
+}
+.inv-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:3rem;text-align:left}
+.inv-card{
+  background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.75rem;
+  transition:all 0.2s;
+}
+.inv-card:hover{border-color:rgba(0,212,255,0.2);transform:translateY(-3px)}
+.inv-val{font-family:'Fraunces',serif;font-size:2rem;font-weight:900;color:var(--green);letter-spacing:-1px}
+.inv-lbl{font-size:0.75rem;color:var(--muted);margin-top:5px;line-height:1.5}
+.inv-cta{margin-top:3rem;display:flex;flex-direction:column;align-items:center;gap:0.75rem}
+.btn-investor{
+  background:var(--white);color:#000;padding:16px 44px;border-radius:999px;
+  font-size:0.9rem;font-weight:700;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;
+  text-decoration:none;display:inline-block;transition:all 0.2s;
+  box-shadow:0 0 40px rgba(0,212,255,0.15);
+}
+.btn-investor:hover{transform:translateY(-2px);box-shadow:0 0 60px rgba(0,212,255,0.25)}
+.inv-note{font-size:0.72rem;color:var(--muted)}
+
+/* ── FOOTER ── */
+footer{
+  background:#030810;border-top:1px solid var(--border);
+  padding:2rem 2.5rem;display:flex;align-items:center;justify-content:space-between;
+}
+.footer-logo{font-family:'Fraunces',serif;font-size:1rem;font-weight:900;color:var(--white)}
+.footer-logo span{color:var(--cyan)}
+.footer-links{display:flex;gap:1.5rem}
+.footer-links a{font-size:0.75rem;color:var(--muted);text-decoration:none;transition:color 0.15s}
+.footer-links a:hover{color:var(--white)}
+
+/* ── BUTTONS ── */
+.btn-primary{
+  background:var(--cyan);color:#000;padding:13px 28px;border-radius:999px;
+  font-size:0.85rem;font-weight:700;text-decoration:none;border:none;cursor:pointer;
+  transition:all 0.2s;font-family:'DM Sans',sans-serif;display:inline-block;
+}
+.btn-primary:hover{background:var(--cyan2);transform:translateY(-1px)}
+.btn-ghost{
+  background:transparent;color:var(--white);padding:13px 28px;border-radius:999px;
+  font-size:0.85rem;font-weight:500;text-decoration:none;
+  border:1px solid var(--border);cursor:pointer;transition:all 0.2s;
+  font-family:'DM Sans',sans-serif;display:inline-block;
+}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+
+/* ── SCROLL REVEAL ── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.65s ease,transform 0.65s ease}
+.reveal.up{opacity:1;transform:translateY(0)}
+.reveal-d1{transition-delay:0.1s}
+.reveal-d2{transition-delay:0.2s}
+.reveal-d3{transition-delay:0.3s}
+
+/* ── WHATSAPP FLOAT ── */
+.wa-float{
+  position:fixed;bottom:1.75rem;right:1.75rem;z-index:999;
+  width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(135deg,#25d366,#128c7e);
+  display:flex;align-items:center;justify-content:center;font-size:1.5rem;
+  box-shadow:0 4px 20px rgba(37,211,102,0.4);transition:all 0.2s;cursor:pointer;
+  text-decoration:none;
+}
+.wa-float:hover{transform:scale(1.1);box-shadow:0 8px 30px rgba(37,211,102,0.5)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .prob-grid,.vision-flow,.future-grid,.inv-cards,.impact-grid{grid-template-columns:1fr}
+  .app-showcase,.survey-wrap,.rm-grid,.stats-row{grid-template-columns:1fr}
+  .app-showcase.reverse{direction:ltr}
+  .vf-card{border-radius:12px!important;margin-bottom:4px}
+  nav .nav-links{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <div class="nav-logo">Dawai<span>Kart</span>247</div>
+  <div class="nav-links">
+    <a href="#problem">Problem</a>
+    <a href="#apps">Platform</a>
+    <a href="#future">Features</a>
+    <a href="#survey">Survey</a>
+    <a href="#invest">Investors</a>
+  </div>
+  <a href="#survey" class="nav-cta">📋 Pharmacist Survey</a>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════
+     SCROLL-DRIVEN FRAME ANIMATION HERO
+═══════════════════════════════════════════════════ -->
+<div id="canvas-section">
+  <div id="canvas-sticky">
+    <img id="pill-canvas" src="frames/ezgif-frame-001.jpg" alt="DawaiKart247 Hero Animation"/>
+    <div class="canvas-overlay"></div>
+
+    <!-- Text shown in first part of scroll -->
+    <div class="canvas-text" id="heroText">
+      <div class="canvas-eyebrow">India's Medicine Intelligence Platform</div>
+      <h1 class="canvas-title">
+        Smarter<br><em>Medicine.</em><br>Zero Waste.
+      </h1>
+      <p class="canvas-sub">₹3,000 crore of medicines expire unsold every year. We built the ecosystem to end that — forever.</p>
+      <div class="canvas-actions">
+        <a href="#apps" class="btn-primary">Explore the Platform</a>
+        <a href="#survey" class="btn-ghost">Take Pharmacist Survey</a>
+      </div>
+    </div>
+
+    <!-- Text shown mid-scroll (pill opening) -->
+    <div class="canvas-text" id="midText" style="display:none">
+      <div class="canvas-eyebrow">The Technology Inside</div>
+      <h2 class="canvas-title" style="font-size:clamp(2rem,5vw,4.5rem)">
+        AI-Powered<br><em>Intelligence</em><br>at Every Step
+      </h2>
+      <p class="canvas-sub">From expiry prediction to regional redistribution — every feature is built on real pharmacy data.</p>
+    </div>
+
+    <!-- Text shown at explosion -->
+    <div class="canvas-text" id="endText" style="display:none">
+      <div class="canvas-eyebrow">The Ecosystem Unleashed</div>
+      <h2 class="canvas-title" style="font-size:clamp(2rem,5vw,4.5rem)">
+        Three Apps.<br><em>One Network.</em><br>Zero Waste.
+      </h2>
+      <p class="canvas-sub">Customer · Pharmacist · Wholesaler — all connected, all intelligent.</p>
+      <div class="canvas-actions" style="margin-top:1.5rem">
+        <a href="#apps" class="btn-primary">See All Apps ↓</a>
+      </div>
+    </div>
+
+    <div class="scroll-hint" id="scrollHint">
+      <span style="letter-spacing:2px">SCROLL</span>
+      <span class="scroll-arrow">↓</span>
+    </div>
+    <div class="frame-indicator" id="frameIndicator">FRAME 01 / 35</div>
+  </div>
+</div>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-inner">
+    <span class="marquee-item">💊 Medicine Delivery <span class="m-sep">·</span></span>
+    <span class="marquee-item">⏰ Dosage Alerts <span class="m-sep">·</span></span>
+    <span class="marquee-item">📦 Expiry Intelligence <span class="m-sep">·</span></span>
+    <span class="marquee-item">🧾 Smart Billing <span class="m-sep">·</span></span>
+    <span class="marquee-item">📊 Demand Forecasting <span class="m-sep">·</span></span>
+    <span class="marquee-item">🗺 Regional Redistribution <span class="m-sep">·</span></span>
+    <span class="marquee-item">🤖 AI Matching Engine <span class="m-sep">·</span></span>
+    <span class="marquee-item">🌐 Zero Waste Network <span class="m-sep">·</span></span>
+    <span class="marquee-item">💊 Medicine Delivery <span class="m-sep">·</span></span>
+    <span class="marquee-item">⏰ Dosage Alerts <span class="m-sep">·</span></span>
+    <span class="marquee-item">📦 Expiry Intelligence <span class="m-sep">·</span></span>
+    <span class="marquee-item">🧾 Smart Billing <span class="m-sep">·</span></span>
+    <span class="marquee-item">📊 Demand Forecasting <span class="m-sep">·</span></span>
+    <span class="marquee-item">🗺 Regional Redistribution <span class="m-sep">·</span></span>
+    <span class="marquee-item">🤖 AI Matching Engine <span class="m-sep">·</span></span>
+    <span class="marquee-item">🌐 Zero Waste Network <span class="m-sep">·</span></span>
+  </div>
+</div>
+
+<!-- STATS -->
+<section style="background:var(--bg);padding:4rem 2rem 0">
+  <div class="container">
+    <div class="stats-row reveal">
+      <div class="stat-item">
+        <div class="stat-val">₹3,<span>000</span>Cr</div>
+        <div class="stat-label">Medicine wasted annually in India</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val"><span>9</span>L+</div>
+        <div class="stat-label">Retail pharmacies — our market</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val"><span>0</span></div>
+        <div class="stat-label">Competitors solving redistribution</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="prob-section" id="problem">
+  <div class="container">
+    <div class="s-eye reveal">The Problem We're Solving</div>
+    <h2 class="s-title reveal">India's pharmacy system<br>is broken in 3 ways</h2>
+    <p class="s-sub reveal reveal-d1">Every local pharmacist faces these problems daily. Nobody has solved all three together — until now.</p>
+    <div class="prob-grid">
+      <div class="prob-card reveal">
+        <div style="font-size:1.8rem;margin-bottom:0.75rem">💸</div>
+        <div class="prob-num">₹3K<span style="font-size:1.5rem">Cr</span></div>
+        <div class="prob-title">Expired Medicine Waste</div>
+        <div class="prob-desc">Pharmacies lose lakhs yearly to medicines expiring on shelves — no early warning, no way to offload them.</div>
+      </div>
+      <div class="prob-card reveal reveal-d1">
+        <div style="font-size:1.8rem;margin-bottom:0.75rem">🚫</div>
+        <div class="prob-num">68<span style="font-size:1.5rem">%</span></div>
+        <div class="prob-title">Patients Skip Doses</div>
+        <div class="prob-desc">Over two-thirds of patients on long-term medication miss doses — no reminders, stockouts, inconvenient refills.</div>
+      </div>
+      <div class="prob-card reveal reveal-d2">
+        <div style="font-size:1.8rem;margin-bottom:0.75rem">📉</div>
+        <div class="prob-num">Zero</div>
+        <div class="prob-title">Data Tools for Pharmacists</div>
+        <div class="prob-desc">Local pharmacists have zero demand forecasting, no smart reorder alerts, no expiry warnings. They run blind.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- APPS SHOWCASE -->
+<section class="apps-section" id="apps">
+  <div class="container">
+    <div class="s-eye reveal">The Platform</div>
+    <h2 class="s-title reveal">Three connected apps.<br>One <em style="color:var(--cyan)">intelligent</em> ecosystem.</h2>
+
+    <!-- APP 1: CUSTOMER -->
+    <div class="app-showcase">
+      <div class="app-info reveal">
+        <div class="app-num">01</div>
+        <div class="app-tag" style="background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.2);color:var(--cyan)">
+          🛒 Customer App
+        </div>
+        <h3>Medicine Delivery<br>+ Health Companion</h3>
+        <p>Order from verified local pharmacies, get smart dosage reminders, and never run out of critical medicines — all in one place.</p>
+        <div class="feature-list">
+          <div class="feat-item"><div class="feat-dot" style="background:var(--cyan)"></div>Search & order from nearby pharmacies with real-time stock</div>
+          <div class="feat-item"><div class="feat-dot" style="background:var(--cyan)"></div>Smart dosage alert system — morning / night / after food</div>
+          <div class="feat-item"><div class="feat-dot" style="background:var(--cyan)"></div>Prescription upload & verified medicine ordering</div>
+          <div class="feat-item"><div class="feat-dot" style="background:var(--cyan)"></div>Auto refill reminder when supply is running low</div>
+          <div class="feat-item"><div class="feat-dot" style="background:var(--cyan)"></div>Real-time delivery tracking with ETA</div>
+          <div class="feat-item">
+            <div class="feat-dot" style="background:var(--purple)"></div>
+            AI health profile — drug interaction warnings
+            <span class="future-badge">🔮 Future</span>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot" style="background:var(--purple)"></div>
+            Chronic disease management dashboard
+            <span class="future-badge">🔮 Future</span>
+          </div>
+        </div>
+        <a href="#survey" class="btn-primary">Join Waitlist</a>
+      </div>
+      <div class="mock-screen reveal reveal-d1">
+        <div class="mock-bar">
+          <div class="mock-dot" style="background:#ff5f57"></div>
+          <div class="mock-dot" style="background:#febc2e"></div>
+          <div class="mock-dot" style="background:#28c840"></div>
+          <div class="mock-url">dawaikart247.com/app</div>
+        </div>
+        <div class="mock-body">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <div style="font-size:0.75rem;font-weight:700">Good Morning, Ravi 👋</div>
+            <div class="mini-badge mb-amber">⏰ 1 dose due</div>
+          </div>
+          <div class="mini-alert">⏰ Metformin 850mg due in 45 mins — After breakfast</div>
+          <div class="mini-section">Your Medicines</div>
+          <div class="mini-card">
+            <div class="mini-icon">💊</div>
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:0.72rem">Metformin 850mg</div>
+              <div style="font-size:0.62rem;color:var(--muted)">After breakfast & dinner</div>
+              <div class="mini-progress"><div class="mini-fill" style="width:30%;background:var(--red)"></div></div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:0.65rem;color:var(--red);font-weight:700">8 left</div>
+              <div style="font-size:0.58rem;color:var(--muted)">~4 days</div>
+            </div>
+          </div>
+          <div class="mini-card">
+            <div class="mini-icon">🔵</div>
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:0.72rem">Atorvastatin 10mg</div>
+              <div style="font-size:0.62rem;color:var(--muted)">At bedtime</div>
+              <div class="mini-progress"><div class="mini-fill" style="width:65%;background:var(--amber)"></div></div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:0.65rem;color:var(--amber);font-weight:700">22 left</div>
+              <div style="font-size:0.58rem;color:var(--muted)">~11 days</div>
+            </div>
+          </div>
+          <div class="mini-section">Quick Order</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+            <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:8px;text-align:center">
+              <div style="font-size:1.2rem">💊</div>
+              <div style="font-size:0.6rem;margin-top:3px;color:var(--muted)">Paracetamol</div>
+              <div style="font-size:0.65rem;color:var(--cyan);font-weight:700">₹32</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:8px;text-align:center">
+              <div style="font-size:1.2rem">🔵</div>
+              <div style="font-size:0.6rem;margin-top:3px;color:var(--muted)">Cetirizine</div>
+              <div style="font-size:0.65rem;color:var(--cyan);font-weight:700">₹48</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:8px;text-align:center">
+              <div style="font-size:1.2rem">☀️</div>
+              <div style="font-size:0.6rem;margin-top:3px;color:var(--muted)">Vitamin D3</div>
+              <div style="font-size:0.65rem;color:var(--cyan);font-weight:700">₹85</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- APP 2: PHARMACIST -->
+    <div class="app-showcase reverse">
+      <div class="mock-screen reveal">
+        <div class="mock-bar">
+          <div class="mock-dot" style="background:#ff5f57"></div>
+          <div class="mock-dot" style="background:#febc2e"></div>
+          <div class="mock-dot" style="background:#28c840"></div>
+          <div class="mock-url">dawaikart247.com/pharmacy</div>
+        </div>
+        <div class="mock-body">
+          <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+            <div style="font-size:0.72rem;font-weight:700">MedPlus · Hyderabad</div>
+            <div class="mini-badge mb-red">🔴 3 expiring</div>
+          </div>
+          <div class="mini-stat-row">
+            <div class="mini-stat">
+              <div class="mini-stat-val" style="color:var(--cyan)">24</div>
+              <div class="mini-stat-lbl">Orders Today</div>
+            </div>
+            <div class="mini-stat">
+              <div class="mini-stat-val" style="color:var(--red)">7</div>
+              <div class="mini-stat-lbl">Expiring Soon</div>
+            </div>
+          </div>
+          <div class="mini-section">Expiry Alerts</div>
+          <div class="mini-alert">⚠️ Amoxicillin 500mg — 28 days left · 140 units</div>
+          <table class="mini-table">
+            <thead><tr><th>Medicine</th><th>Days</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Amoxicillin 500mg</td><td>28d</td><td><span class="mini-badge mb-red">Critical</span></td></tr>
+              <tr><td>Metformin 850mg</td><td>52d</td><td><span class="mini-badge mb-amber">Warning</span></td></tr>
+              <tr><td>Paracetamol 650mg</td><td>78d</td><td><span class="mini-badge mb-amber">Warning</span></td></tr>
+              <tr><td>Atorvastatin 10mg</td><td>91d</td><td><span class="mini-badge mb-green">OK</span></td></tr>
+            </tbody>
+          </table>
+          <div class="mini-section" style="margin-top:10px">Live Orders</div>
+          <div class="mini-order-row"><span>Ravi Kumar · Paracetamol×2</span><span style="color:var(--amber)">₹148</span></div>
+          <div class="mini-order-row"><span>Apollo Clinic · Amoxicillin×10</span><span style="color:var(--green)">₹940</span></div>
+        </div>
+      </div>
+      <div class="app-info reveal reveal-d1">
+        <div class="app-num">02</div>
+        <div class="app-tag" style="background:rgba(255,170,0,0.1);border:1px solid rgba(255,170,0,0.2);color:var(--amber)">
+          💊 Pharmacist Dashboard
+        </div>
+        <h3>Smart Operations<br>for Every Pharmacy</h3>
+        <p>Turn your pharmacy from a guesswork business into a data-driven operation — with expiry alerts, smart billing, and AI-powered reorder intelligence.</p>
+        <div class="feature-list">
+          <div class="feat-item"><div class="feat-dot" style="background:var(--amber)"></div>Expiry alert system — color coded 30/60/90 day warnings</div>
+          <div class="feat-item"><div class="feat-dot" style="background:var(--amber)"></div>GST-ready billing with WhatsApp invoice sharing</div>
+          <div class="feat-item"><div class="feat-dot" style="background:var(--amber)"></div>Incoming order management — accept, pack, dispatch</div>
+          <div class="feat-item"><div class="feat-dot" style="background:var(--amber)"></div>Demand forecasting from customer app data</div>
+          <div class="feat-item"><div class="feat-dot" style="background:var(--amber)"></div>Best-seller reorder suggestions with threshold alerts</div>
+          <div class="feat-item">
+            <div class="feat-dot" style="background:var(--purple)"></div>
+            Voice-assisted billing — speak to generate invoice
+            <span class="future-badge">🔮 Future</span>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot" style="background:var(--purple)"></div>
+            Automated supplier ordering with price comparison
+            <span class="future-badge">🔮 Future</span>
+          </div>
+        </div>
+        <a href="#survey" class="btn-primary">Join Pilot Program</a>
+      </div>
+    </div>
+
+    <!-- APP 3: WHOLESALER -->
+    <div class="app-showcase">
+      <div class="app-info reveal">
+        <div class="app-num">03</div>
+        <div class="app-tag" style="background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.2);color:var(--green)">
+          🚚 Wholesaler Network
+        </div>
+        <h3>Redistribute.<br>Don't <em style="color:var(--green);font-style:italic">Waste.</em></h3>
+        <p>The world's first medicine redistribution marketplace — moves near-expiry stock from surplus regions to where it's needed most, using AI matching.</p>
+        <div class="feature-list">
+          <div class="feat-item"><div class="feat-dot" style="background:var(--green)"></div>Live India surplus-deficit map across all connected pharmacies</div>
+          <div class="feat-item"><div class="feat-dot" style="background:var(--green)"></div>AI redistribution match engine scored by urgency & distance</div>
+          <div class="feat-item"><div class="feat-dot" style="background:var(--green)"></div>Dynamic discount pricing — auto-reduces as expiry nears</div>
+          <div class="feat-item"><div class="feat-dot" style="background:var(--green)"></div>Bulk transfer order management for distributors</div>
+          <div class="feat-item"><div class="feat-dot" style="background:var(--green)"></div>Waste reduction scorecard for govt & CSR reporting</div>
+          <div class="feat-item">
+            <div class="feat-dot" style="background:var(--purple)"></div>
+            Govt API integration — Jan Aushadhi & DHO portals
+            <span class="future-badge">🔮 Future</span>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot" style="background:var(--purple)"></div>
+            Blockchain traceability for every transferred batch
+            <span class="future-badge">🔮 Future</span>
+          </div>
+        </div>
+        <a href="#survey" class="btn-ghost">Learn More</a>
+      </div>
+      <div class="mock-screen reveal reveal-d1">
+        <div class="mock-bar">
+          <div class="mock-dot" style="background:#ff5f57"></div>
+          <div class="mock-dot" style="background:#febc2e"></div>
+          <div class="mock-dot" style="background:#28c840"></div>
+          <div class="mock-url">dawaikart247.com/wholesale</div>
+        </div>
+        <div class="mock-body">
+          <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+            <div style="font-size:0.72rem;font-weight:700">🗺 Redistribution Hub</div>
+            <div style="font-size:0.62rem;color:var(--green);display:flex;align-items:center;gap:4px">
+              <span style="width:5px;height:5px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse2 1.5s infinite"></span>
+              LIVE
+            </div>
+          </div>
+          <div class="mini-map">
+            <!-- Simplified India map dots -->
+            <div class="map-dot" style="background:var(--amber);top:40%;left:57%;"><div style="width:8px;height:8px;border-radius:50%;background:var(--amber)"></div></div>
+            <div class="map-dot" style="background:var(--cyan);top:65%;left:44%;"><div style="width:8px;height:8px;border-radius:50%;background:var(--cyan)"></div></div>
+            <div class="map-dot" style="background:var(--amber);top:30%;left:25%;"><div style="width:8px;height:8px;border-radius:50%;background:var(--amber)"></div></div>
+            <div class="map-dot" style="background:var(--cyan);top:72%;left:58%;"><div style="width:8px;height:8px;border-radius:50%;background:var(--cyan)"></div></div>
+            <div class="map-dot" style="background:var(--cyan);top:30%;left:70%;"><div style="width:8px;height:8px;border-radius:50%;background:var(--cyan)"></div></div>
+            <div style="position:absolute;bottom:6px;left:8px;display:flex;gap:10px;font-size:0.58rem">
+              <span style="color:var(--amber)">● Surplus</span>
+              <span style="color:var(--cyan)">● Deficit</span>
+            </div>
+          </div>
+          <div class="mini-section">Top AI Matches</div>
+          <div class="mini-match">
+            <div style="display:flex;justify-content:space-between;font-size:0.7rem">
+              <span style="font-weight:700">Amoxicillin 500mg</span>
+              <span style="color:var(--green);font-weight:700">Saves ₹68K</span>
+            </div>
+            <div class="match-flow-mini">
+              <span class="surplus-chip">Hyderabad</span>
+              <span style="color:var(--muted)">──▶</span>
+              <span class="city-chip">Bangalore</span>
+              <span style="margin-left:auto" class="mini-badge mb-red">22d</span>
+            </div>
+          </div>
+          <div class="mini-match">
+            <div style="display:flex;justify-content:space-between;font-size:0.7rem">
+              <span style="font-weight:700">Atorvastatin 10mg</span>
+              <span style="color:var(--green);font-weight:700">Saves ₹1.1L</span>
+            </div>
+            <div class="match-flow-mini">
+              <span class="surplus-chip">Mumbai</span>
+              <span style="color:var(--muted)">──▶</span>
+              <span class="city-chip">Chennai</span>
+              <span style="margin-left:auto" class="mini-badge mb-amber">31d</span>
+            </div>
+          </div>
+          <div style="text-align:center;margin-top:8px;font-size:0.65rem;color:var(--green);font-weight:700">
+            ₹34.72L waste prevented this month 🎉
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- VISION FLOW -->
+<section class="vision-section" id="vision">
+  <div class="container">
+    <div class="s-eye reveal">Our 3-Phase Vision</div>
+    <h2 class="s-title reveal">From delivery app<br>to <em style="color:var(--cyan)">national network</em></h2>
+    <div class="vision-flow">
+      <div class="vf-card reveal">
+        <div class="vf-num">01</div>
+        <div class="vf-phase">Phase 1 · Now — Month 5</div>
+        <div class="vf-title">Connect the Last Mile</div>
+        <div class="vf-desc">Build trust with local pharmacists and patients through seamless delivery + smart health tools.</div>
+        <div class="vf-tags">
+          <div class="vf-tag">Customer medicine delivery</div>
+          <div class="vf-tag">Dosage reminders</div>
+          <div class="vf-tag">Expiry alerts (90-day)</div>
+          <div class="vf-tag">GST billing software</div>
+          <div class="vf-tag">10 pharmacy pilot</div>
+        </div>
+      </div>
+      <div class="vf-card reveal reveal-d1">
+        <div class="vf-num">02</div>
+        <div class="vf-phase">Phase 2 · Month 6–12</div>
+        <div class="vf-title">Intelligence Layer</div>
+        <div class="vf-desc">Data from Phase 1 trains AI models that predict demand, suggest reorders, and prevent waste before it happens.</div>
+        <div class="vf-tags">
+          <div class="vf-tag">Demand forecasting engine</div>
+          <div class="vf-tag">Smart reorder alerts</div>
+          <div class="vf-tag">Best product suggestions</div>
+          <div class="vf-tag">Seasonal trend analysis</div>
+          <div class="vf-tag">100+ pharmacies</div>
+        </div>
+      </div>
+      <div class="vf-card reveal reveal-d2">
+        <div class="vf-num">03</div>
+        <div class="vf-phase">Phase 3 · Month 12–18</div>
+        <div class="vf-title">Redistribution Network</div>
+        <div class="vf-desc">The final unlock — a national marketplace that moves near-expiry stock from surplus regions to shortage zones.</div>
+        <div class="vf-tags">
+          <div class="vf-tag">Surplus–deficit live map</div>
+          <div class="vf-tag">AI match engine</div>
+          <div class="vf-tag">Dynamic pricing</div>
+          <div class="vf-tag">Govt & NGO portals</div>
+          <div class="vf-tag">National scale</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FUTURISTIC FEATURES -->
+<section class="future-section" id="future">
+  <div class="container">
+    <div class="s-eye reveal">Future Roadmap</div>
+    <h2 class="s-title reveal">What's coming next —<br>the <em style="color:var(--purple)">futuristic</em> layer</h2>
+    <p class="s-sub reveal">Beyond the MVP — these AI-powered features will redefine how India manages medicines at scale.</p>
+    <div class="future-grid">
+      <div class="future-card reveal">
+        <div class="fc-icon" style="background:rgba(0,212,255,0.1)">🤖</div>
+        <div class="fc-title">AI Drug Interaction Engine</div>
+        <div class="fc-desc">Real-time warnings when a customer's prescription combination may cause adverse reactions — powered by NLP + medical knowledge graphs.</div>
+        <div class="fc-label" style="background:rgba(0,212,255,0.1);color:var(--cyan)">AI / SAFETY</div>
+      </div>
+      <div class="future-card reveal reveal-d1">
+        <div class="fc-icon" style="background:rgba(155,89,255,0.1)">🔗</div>
+        <div class="fc-title">Blockchain Medicine Traceability</div>
+        <div class="fc-desc">Every redistributed medicine batch gets a blockchain certificate — proving its cold chain integrity, handling history, and authenticity.</div>
+        <div class="fc-label" style="background:rgba(155,89,255,0.1);color:var(--purple)">BLOCKCHAIN</div>
+      </div>
+      <div class="future-card reveal reveal-d2">
+        <div class="fc-icon" style="background:rgba(0,255,136,0.1)">🎤</div>
+        <div class="fc-title">Voice-Assisted Billing</div>
+        <div class="fc-desc">Pharmacists speak medicine names aloud — AI transcribes, finds the item in inventory, adds to bill and generates GST invoice automatically.</div>
+        <div class="fc-label" style="background:rgba(0,255,136,0.1);color:var(--green)">VOICE AI</div>
+      </div>
+      <div class="future-card reveal">
+        <div class="fc-icon" style="background:rgba(255,59,92,0.1)">❤️</div>
+        <div class="fc-title">Chronic Disease Dashboard</div>
+        <div class="fc-desc">Patients with diabetes, hypertension or heart conditions get a personal health timeline — tracking adherence, labs, and doctor notes in one view.</div>
+        <div class="fc-label" style="background:rgba(255,59,92,0.1);color:var(--red)">HEALTH TECH</div>
+      </div>
+      <div class="future-card reveal reveal-d1">
+        <div class="fc-icon" style="background:rgba(255,170,0,0.1)">🛰</div>
+        <div class="fc-title">Predictive Epidemic Alerting</div>
+        <div class="fc-desc">Aggregated demand spikes across cities get analysed to detect early signals of disease outbreaks — alerting health authorities proactively.</div>
+        <div class="fc-label" style="background:rgba(255,170,0,0.1);color:var(--amber)">PUBLIC HEALTH</div>
+      </div>
+      <div class="future-card reveal reveal-d2">
+        <div class="fc-icon" style="background:rgba(0,212,255,0.1)">🏛</div>
+        <div class="fc-title">Jan Aushadhi API Integration</div>
+        <div class="fc-desc">Direct API connection with PMBJP government portal — redistributed near-expiry medicines can be routed to 10,000+ Jan Aushadhi outlets nationwide.</div>
+        <div class="fc-label" style="background:rgba(0,212,255,0.1);color:var(--cyan)">GOVT TECH</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- IMPACT -->
+<section class="impact-section">
+  <div class="container">
+    <div class="s-eye" style="color:rgba(0,255,136,0.7)">The Opportunity</div>
+    <h2 class="s-title" style="text-align:center">Numbers that matter</h2>
+    <div class="impact-grid reveal">
+      <div class="impact-item">
+        <div class="impact-val" style="color:var(--green)">₹3,000Cr</div>
+        <div class="impact-lbl">Annual medicine waste — the market we're eliminating</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-val" style="color:var(--cyan)">9L+</div>
+        <div class="impact-lbl">Retail pharmacies in India — our addressable market</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-val" style="color:var(--amber)">140Cr</div>
+        <div class="impact-lbl">Indians who deserve better medicine access</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-val" style="color:var(--purple)">3×</div>
+        <div class="impact-lbl">Revenue streams — SaaS + delivery + redistribution</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SURVEY -->
+<section class="survey-section" id="survey">
+  <div class="container">
+    <div class="s-eye reveal">Pharmacist Survey</div>
+    <h2 class="s-title reveal">Your voice shapes<br>this <em style="color:var(--cyan)">product</em></h2>
+    <div class="survey-wrap">
+      <div class="reveal">
+        <p class="s-sub">We're building DawaiKart247 for pharmacists — not just investors. Tell us your real daily pain points and we'll build solutions around your needs.</p>
+        <div class="survey-why">
+          <div class="sw-item"><div class="sw-num">1</div>Your answers directly shape which features we build first in our MVP.</div>
+          <div class="sw-item"><div class="sw-num">2</div>Early survey participants get <strong style="color:var(--cyan)">free lifetime access</strong> to the pharmacist dashboard.</div>
+          <div class="sw-item"><div class="sw-num">3</div>We'll share the aggregated findings report back with all participants.</div>
+          <div class="sw-item"><div class="sw-num">4</div>Takes only <strong style="color:var(--white)">3–4 minutes</strong>. 100% confidential.</div>
+        </div>
+        <div class="survey-counter">
+          <div class="sc-val">47</div>
+          <div class="sc-lbl">pharmacists across Hyderabad & Pune have responded</div>
+        </div>
+      </div>
+      <div class="reveal reveal-d1">
+        <div class="s-form">
+          <div class="form-title">Pharmacist Pain Point Survey</div>
+          <div class="form-sub">dawaikart247.com · 4 quick questions · 3 mins</div>
+          <div class="form-prog" id="fp">
+            <div class="fp on" id="fp1"></div>
+            <div class="fp" id="fp2"></div>
+            <div class="fp" id="fp3"></div>
+            <div class="fp" id="fp4"></div>
+          </div>
+          <div class="fstep active" id="fs1">
+            <div class="fq">What is your biggest daily challenge? <em>(select one)</em></div>
+            <div class="fopts" id="fo1">
+              <div class="fopt" onclick="sel(this,'fo1')">💊 Managing medicine expiry & wastage</div>
+              <div class="fopt" onclick="sel(this,'fo1')">📦 Tracking stock levels manually</div>
+              <div class="fopt" onclick="sel(this,'fo1')">🧾 Billing & GST filing takes too long</div>
+              <div class="fopt" onclick="sel(this,'fo1')">📋 Managing customer orders & delivery</div>
+              <div class="fopt" onclick="sel(this,'fo1')">🔁 Knowing when to reorder medicines</div>
+            </div>
+            <div class="fnav"><button class="btn-next" onclick="nxt(1)">Next →</button></div>
+          </div>
+          <div class="fstep" id="fs2">
+            <div class="fq">How much do you lose to expired medicines per month?</div>
+            <div class="fopts" id="fo2">
+              <div class="fopt" onclick="sel(this,'fo2')">Under ₹2,000</div>
+              <div class="fopt" onclick="sel(this,'fo2')">₹2,000 – ₹10,000</div>
+              <div class="fopt" onclick="sel(this,'fo2')">₹10,000 – ₹30,000</div>
+              <div class="fopt" onclick="sel(this,'fo2')">Over ₹30,000</div>
+            </div>
+            <div class="fnav"><button class="btn-back" onclick="prv(2)">← Back</button><button class="btn-next" onclick="nxt(2)">Next →</button></div>
+          </div>
+          <div class="fstep" id="fs3">
+            <div class="fq">Which feature would you pay for immediately?</div>
+            <div class="fopts" id="fo3">
+              <div class="fopt" onclick="sel(this,'fo3')">⚠️ Expiry alert 3 months before</div>
+              <div class="fopt" onclick="sel(this,'fo3')">📊 Demand forecasting for next month</div>
+              <div class="fopt" onclick="sel(this,'fo3')">🧾 Auto billing + WhatsApp invoice</div>
+              <div class="fopt" onclick="sel(this,'fo3')">🚚 Sell near-expiry stock to other regions</div>
+            </div>
+            <div class="fnav"><button class="btn-back" onclick="prv(3)">← Back</button><button class="btn-next" onclick="nxt(3)">Next →</button></div>
+          </div>
+          <div class="fstep" id="fs4">
+            <div class="fq">Leave your contact for early access</div>
+            <input class="finput" placeholder="Your name" id="fi-name"/>
+            <input class="finput" placeholder="WhatsApp (+91 XXXXX XXXXX)" id="fi-phone"/>
+            <input class="finput" placeholder="City (e.g. Hyderabad)" id="fi-city"/>
+            <div class="fnav"><button class="btn-back" onclick="prv(4)">← Back</button><button class="btn-next" onclick="sub()">✓ Submit Survey</button></div>
+          </div>
+          <div class="fsuccess" id="fsuccess">
+            <div class="fsuccess-icon">🎉</div>
+            <div class="fsuccess-title">You're in the founding cohort!</div>
+            <div class="fsuccess-sub">We've recorded your responses. You'll be among the first pharmacists to get early access to DawaiKart247 — completely free. We'll reach you on WhatsApp soon.</div>
+            <div class="fsuccess-share">📲 Share: <strong>dawaikart247.com</strong> — help us reach more pharmacists</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section class="roadmap-section" id="roadmap">
+  <div class="container">
+    <div class="s-eye reveal">Build Roadmap</div>
+    <h2 class="s-title reveal">From survey to scale</h2>
+    <div class="rm-grid">
+      <div class="rm-track reveal">
+        <div class="rm-item">
+          <div class="rm-dot done">✓</div>
+          <div>
+            <div class="rm-phase">Completed · March 2026</div>
+            <div class="rm-title">Domain & Landing Page</div>
+            <div class="rm-desc">dawaikart247.com live. Collecting pharmacist survey data to validate core pain points.</div>
+          </div>
+        </div>
+        <div class="rm-item">
+          <div class="rm-dot now">→</div>
+          <div>
+            <div class="rm-phase">Active · Now</div>
+            <div class="rm-title">Pilot with 10 Pharmacies</div>
+            <div class="rm-desc">On-board 10 local pharmacists in Hyderabad. Build core billing + expiry alert features based on survey data.</div>
+          </div>
+        </div>
+        <div class="rm-item">
+          <div class="rm-dot next">3</div>
+          <div>
+            <div class="rm-phase">Month 3–4</div>
+            <div class="rm-title">Customer App Beta</div>
+            <div class="rm-desc">Launch customer ordering + dosage alert system. Connect customers to pilot pharmacies.</div>
+          </div>
+        </div>
+        <div class="rm-item">
+          <div class="rm-dot next">4</div>
+          <div>
+            <div class="rm-phase">Month 5–6</div>
+            <div class="rm-title">Seed Round</div>
+            <div class="rm-desc">Use pilot data & survey insights to raise seed funding. Expand to 100 pharmacies across Telangana.</div>
+          </div>
+        </div>
+        <div class="rm-item">
+          <div class="rm-dot next">5</div>
+          <div>
+            <div class="rm-phase">Month 12–18</div>
+            <div class="rm-title">Wholesaler Network Launch</div>
+            <div class="rm-desc">Launch redistribution marketplace. Begin government & NGO partnerships for Jan Aushadhi integration.</div>
+          </div>
+        </div>
+      </div>
+      <div class="why-now-card reveal reveal-d1">
+        <div class="wn-title">Why now is the right time</div>
+        <div class="wn-item"><span class="wn-emoji">📱</span>UPI & smartphone penetration makes digital pharmacy viable even in Tier 2/3 cities</div>
+        <div class="wn-item"><span class="wn-emoji">💊</span>Post-COVID, medicine delivery normalised — customers now expect it</div>
+        <div class="wn-item"><span class="wn-emoji">📊</span>No competitor has built the redistribution layer — the market is wide open</div>
+        <div class="wn-item"><span class="wn-emoji">🏛</span>Govt schemes like Jan Aushadhi create a ready buyer for redistributed medicines</div>
+        <div class="wn-item"><span class="wn-emoji">🌱</span>ESG investors actively funding waste-reduction startups — perfect timing</div>
+        <div class="wn-item"><span class="wn-emoji">🤖</span>AI cost has dropped 10× — building intelligent features is now affordable at MVP stage</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INVESTOR -->
+<section class="investor-section" id="invest">
+  <div class="container">
+    <div class="s-eye" style="color:rgba(0,255,136,0.7)">For Investors</div>
+    <h2 class="s-title reveal">The business case<br>is undeniable</h2>
+    <div class="inv-cards reveal">
+      <div class="inv-card">
+        <div class="inv-val">₹3,000Cr</div>
+        <div class="inv-lbl">Total addressable market — expired medicine waste problem in India alone</div>
+      </div>
+      <div class="inv-card">
+        <div class="inv-val">9L+ pharmacies</div>
+        <div class="inv-lbl">Serviceable market at ₹500–2,000/month SaaS per pharmacy</div>
+      </div>
+      <div class="inv-card">
+        <div class="inv-val">3× Revenue</div>
+        <div class="inv-lbl">SaaS subscriptions + delivery commission + redistribution marketplace fees</div>
+      </div>
+    </div>
+    <div class="inv-cta reveal">
+      <a href="mailto:founder@dawaikart247.com" class="btn-investor">📩 Talk to the Founder</a>
+      <div class="inv-note">founder@dawaikart247.com · Hyderabad, India · dawaikart247.com</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Dawai<span>Kart</span>247</div>
+  <div class="footer-links">
+    <a href="#problem">Problem</a>
+    <a href="#apps">Platform</a>
+    <a href="#survey">Survey</a>
+    <a href="#invest">Investors</a>
+  </div>
+  <div style="font-size:0.72rem;color:var(--muted)">© 2026 DawaiKart247 · Hyderabad, India</div>
+</footer>
+
+<!-- WHATSAPP FLOAT -->
+<a href="https://wa.me/919XXXXXXXXX" class="wa-float" target="_blank" title="Chat on WhatsApp">💬</a>
+
+<script>
+// ═══ SCROLL-DRIVEN FRAME ANIMATION ═══════════════════════════════
+const totalFrames = 35;
+const frames = Array.from({length: totalFrames}, (_,i) => {
+  const n = String(i+1).padStart(3,'0');
+  return `frames/ezgif-frame-${n}.jpg`;
+});
+
+// Preload all frames
+const imgs = frames.map(src => { const i = new Image(); i.src = src; return i; });
+
+const canvasSection = document.getElementById('canvas-section');
+const pillCanvas = document.getElementById('pill-canvas');
+const heroText = document.getElementById('heroText');
+const midText = document.getElementById('midText');
+const endText = document.getElementById('endText');
+const scrollHint = document.getElementById('scrollHint');
+const frameIndicator = document.getElementById('frameIndicator');
+
+let currentFrame = 0;
+
+function updateFrame() {
+  const sectionTop = canvasSection.offsetTop;
+  const sectionHeight = canvasSection.offsetHeight;
+  const scrolled = window.scrollY - sectionTop;
+  const progress = Math.max(0, Math.min(1, scrolled / (sectionHeight - window.innerHeight)));
+
+  const frameIndex = Math.min(totalFrames - 1, Math.floor(progress * totalFrames));
+
+  if (frameIndex !== currentFrame) {
+    currentFrame = frameIndex;
+    pillCanvas.src = frames[frameIndex];
+    frameIndicator.textContent = `FRAME ${String(frameIndex+1).padStart(2,'0')} / ${totalFrames}`;
+  }
+
+  // Text transitions based on progress
+  if (progress < 0.25) {
+    heroText.style.display = 'flex'; midText.style.display = 'none'; endText.style.display = 'none';
+    heroText.classList.add('visible');
+    scrollHint.style.opacity = Math.max(0, 1 - progress * 8);
+  } else if (progress < 0.65) {
+    heroText.style.display = 'none'; midText.style.display = 'flex'; endText.style.display = 'none';
+    midText.classList.add('visible');
+    scrollHint.style.opacity = 0;
+  } else {
+    heroText.style.display = 'none'; midText.style.display = 'none'; endText.style.display = 'flex';
+    endText.classList.add('visible');
+  }
+}
+
+window.addEventListener('scroll', updateFrame, {passive: true});
+// Trigger once on load
+setTimeout(() => { heroText.classList.add('visible'); }, 300);
+
+// ═══ SCROLL REVEAL ════════════════════════════════════════════════
+const revealEls = document.querySelectorAll('.reveal');
+const revealIO = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('up'); revealIO.unobserve(e.target); }
+  });
+}, {threshold: 0.1});
+revealEls.forEach(el => revealIO.observe(el));
+
+// ═══ FORM ═════════════════════════════════════════════════════════
+function sel(el, groupId) {
+  document.querySelectorAll(`#${groupId} .fopt`).forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function nxt(step) {
+  document.getElementById(`fs${step}`).classList.remove('active');
+  document.getElementById(`fs${step+1}`).classList.add('active');
+  for(let i=1;i<=4;i++) document.getElementById(`fp${i}`).className = 'fp' + (i <= step+1 ? ' on' : '');
+}
+function prv(step) {
+  document.getElementById(`fs${step}`).classList.remove('active');
+  document.getElementById(`fs${step-1}`).classList.add('active');
+  for(let i=1;i<=4;i++) document.getElementById(`fp${i}`).className = 'fp' + (i <= step-1 ? ' on' : '');
+}
+function sub() {
+  document.getElementById('fs4').classList.remove('active');
+  document.getElementById('fp').style.display = 'none';
+  document.querySelector('.form-title').style.display = 'none';
+  document.querySelector('.form-sub').style.display = 'none';
+  document.getElementById('fsuccess').style.display = 'block';
+}
+
+// ═══ NAV SCROLL EFFECT ════════════════════════════════════════════
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('mainNav');
+  if (window.scrollY > 100) {
+    nav.style.boxShadow = '0 4px 30px rgba(0,0,0,0.4)';
+  } else {
+    nav.style.boxShadow = 'none';
+  }
+}, {passive: true});
+</script>
+</body>
+</html>
